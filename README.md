@@ -213,3 +213,161 @@ ReactDOM.render(
 ```
 
 - `App.js`의 내용을 루트 DOM 노드에 렌더링한다. 
+
+```react
+function tick() {
+  const element = (
+    <div>
+      <h1>Hello, world!</h1>
+      <h2>It is {new Date().toLocaleTimeString()}.</h2>
+    </div>
+  );
+  ReactDOM.render(element, document.getElementById('root'));
+}
+
+setInterval(tick, 1000);
+```
+
+- 대부분의 React 앱은 `ReactDOM.render()`를 한번만 호출합니다. 
+
+
+
+## Component와 Props
+
+- 함수 컴포넌트와 클래스 컴포넌트
+
+  - 컴포넌트를 정의하는 가장 간단한 방법은 Javascript 함수를 작성하는 것입니다. 
+
+    ```react
+    function Welcome(props) {
+      return <h1>Hello, {props.name}</h1>;
+    }
+    ```
+
+    - 위의 함수는 하나의 *props 객체 인자를 받은 후, React 엘리먼트를 반환하므로 React 컴포넌트 입니다. 이러한 컴포넌트는 Javascript 함수이기 때문에 "함수 컴포넌트"라고 호칭합니다.
+
+  - 클래스 컴포넌트
+
+    ```react
+    class Welcome extends React.Component {
+      render() {
+        return <h1>Hello, {this.props.name}</h1>;
+      }
+    }
+    ```
+
+    - React의 관점에서 볼 때, 두 가지 유형의 컴포넌트는 동일하지만 각각의 유형은 몇 가지 추가 기능이 있다. 
+
+- 컴포넌트 렌더링
+
+  - React 엘리먼트의 사용자 정의 컴포넌트
+
+    ```react
+    const element = <Welcome name="Kim" />;
+    ```
+
+    - 컴포넌트 렌더링
+
+      ```react
+      function Welcome(props) {
+      	return <h1> hello, {props.name} </h1>;
+      }
+      
+      const element = <Welcome name="Sara" />;
+      ReactDOM.render(
+      	element,
+      	document.getElementById('root')
+      )
+      ```
+
+    **컴포넌트의 이름은 항상 대문자로 시작합니다. [이름 규칙 더보기](https://ko.reactjs.org/docs/jsx-in-depth.html#user-defined-components-must-be-capitalized)**
+
+- 컴포넌트 합성
+
+  - 자신의 출력에 다른 컴포넌트를 참조할 수 있습니다.
+
+    ```react
+    function Welcome(props) {
+    	return <h1> hello, {props.name} </h1>;
+    }
+    
+    function App() {
+    	return {
+    		<div>
+    			<Welcome name="Park" />;
+    			<Welcome name="Kim" />;
+    			<Welcome name="Lee" />;
+    		</div>
+    	}
+    }
+    
+    const element = <Welcome name="Sara" />;
+    ReactDOM.render(
+    	<App />
+    	document.getElementById('root')
+    )
+    ```
+
+- 컴포넌트 추출
+
+  - 컴포넌트를 기능단위로 나눈다.
+
+    ```react
+    function Comment(props) {
+      return (
+        <div className="Comment">
+          <div className="UserInfo">
+            <img className="Avatar"
+              src={props.author.avatarUrl}
+              alt={props.author.name}
+            />
+            <div className="UserInfo-name">
+              {props.author.name}
+            </div>
+          </div>
+          <div className="Comment-text">
+            {props.text}
+          </div>
+          <div className="Comment-date">
+            {formatDate(props.date)}
+          </div>
+        </div>
+      );
+    }
+    ```
+
+    - 위의 코드는 다음과 같이 추출해서 단순화할 수 있다.
+
+      ```react
+      function Comment(props) {
+        return (
+          <div className="Comment">
+            <UserInfo user={props.auther} />
+            <div className="Comment-text">{props.text}</div>
+          </div>
+        );
+      }
+      
+      function Avatar(props) {
+        return (
+          <img className="Avatar" src={props.user.avatarUrl} alt={props.user.name} />
+        );
+      }
+      
+      function UserInfo(props) {
+        return (
+          <div className="UserInfo">
+            <Avatar user={props.auther} />
+            <div className="UserInfo-name">{props.author.name}</div>
+          </div>
+        );
+      }
+      ```
+
+- props는 읽기 전용입니다. 
+
+  - 함수 컴포넌트나 클래스 컴포넌트는 모두 컴포넌트의 자체 props를 수정해서는 안됩니다. 
+
+  - **모든 React 컴포넌트는 자신의 props를 다룰 때 반드시 *순수 함수처럼 동작해야 합니다**
+
+    *순수 함수: 입력값을 바꾸려 하지 않고, 항상 동일한 입력값에 대해 동일한 결과를 반환
