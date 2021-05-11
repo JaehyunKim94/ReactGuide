@@ -53,7 +53,9 @@ npm start
     
   - 생성되는 파일 둘러보기
 
-    ```react
+    ```jsx
+    // index.js
+    
     import React from 'react';
     import ReactDOM from 'react-dom';
     import './index.css';
@@ -70,12 +72,14 @@ npm start
     // If you want to start measuring performance in your app, pass a function
     // to log results (for example: reportWebVitals(console.log))
     // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-    reportWebVitals();
+reportWebVitals();
     ```
 
     - `React.StrictMode`: App의 잠재적인 문제를 알아내기 위한 도구
-
-    ```react
+    
+    ```jsx
+    // App.js
+    
     import logo from './logo.svg';
     import './App.css';
     
@@ -98,18 +102,18 @@ npm start
           </header>
         </div>
       );
-    }
+}
     
     export default App;
     ```
-
+    
     
 
 ## Hello World
 
 가장 간단한 형태의 React 예시
 
-```react
+```jsx
 /* index.js */
 ReactDOM.render(
 	<h1>Hello World</h1>,
@@ -127,7 +131,7 @@ ReactDOM.render(
 
   *문법적 설탕: 문법적 기능은 그대로지만 읽는 사람이 직관적으로 쉽게 코드를 읽을 수 있게 만듦
 
-  ```react
+  ```jsx
   function getFullName(user) {
     return user.firstName + " " + user.lastName;
   }
@@ -156,7 +160,7 @@ ReactDOM.render(
 
 - JSX 속성 정의
 
-  ```react
+  ```jsx
   // 속성에 따옴표를 사용한 문자열 리터럴 정의
   const elemA = <div tabIndex="0"></div>;
   // 중괄호를 사용한 어트리뷰트에 JS 표현식 삽입
@@ -167,7 +171,7 @@ ReactDOM.render(
 
 - JSX는 주입 공격을 방지합니다.
 
-  ```react
+  ```jsx
   const title = response.potentiallyMaliciousInput;
   const element = <h1>{title}</h1>;
   ```
@@ -188,7 +192,7 @@ ReactDOM.render(
   );
   ```
 
-  ```react
+  ```jsx
   const element = React.createElement(
   	'h1',
   	{className: 'greeting'},
@@ -202,7 +206,7 @@ ReactDOM.render(
 
 엘리먼트는 React 앱의 가장 작은 단위입니다. 브라우저 DOM 엘리먼트와 달리 일반 객체이며, 쉽게 생성할 수 있다. 
 
-```react
+```jsx
 /* index.js 일부 */
 ReactDOM.render(
   <React.StrictMode>
@@ -214,7 +218,7 @@ ReactDOM.render(
 
 - `App.js`의 내용을 루트 DOM 노드에 렌더링한다. 
 
-```react
+```jsx
 function tick() {
   const element = (
     <div>
@@ -238,7 +242,7 @@ setInterval(tick, 1000);
 
   - 컴포넌트를 정의하는 가장 간단한 방법은 Javascript 함수를 작성하는 것입니다. 
 
-    ```react
+    ```jsx
     function Welcome(props) {
       return <h1>Hello, {props.name}</h1>;
     }
@@ -248,7 +252,7 @@ setInterval(tick, 1000);
 
   - 클래스 컴포넌트
 
-    ```react
+    ```jsx
     class Welcome extends React.Component {
       render() {
         return <h1>Hello, {this.props.name}</h1>;
@@ -262,13 +266,13 @@ setInterval(tick, 1000);
 
   - React 엘리먼트의 사용자 정의 컴포넌트
 
-    ```react
+    ```jsx
     const element = <Welcome name="Kim" />;
     ```
 
     - 컴포넌트 렌더링
 
-      ```react
+      ```jsx
       function Welcome(props) {
       	return <h1> hello, {props.name} </h1>;
       }
@@ -286,7 +290,7 @@ setInterval(tick, 1000);
 
   - 자신의 출력에 다른 컴포넌트를 참조할 수 있습니다.
 
-    ```react
+    ```jsx
     function Welcome(props) {
     	return <h1> hello, {props.name} </h1>;
     }
@@ -312,7 +316,7 @@ setInterval(tick, 1000);
 
   - 컴포넌트를 기능단위로 나눈다.
 
-    ```react
+    ```jsx
     function Comment(props) {
       return (
         <div className="Comment">
@@ -338,7 +342,7 @@ setInterval(tick, 1000);
 
     - 위의 코드는 다음과 같이 추출해서 단순화할 수 있다.
 
-      ```react
+      ```jsx
       function Comment(props) {
         return (
           <div className="Comment">
@@ -371,3 +375,429 @@ setInterval(tick, 1000);
   - **모든 React 컴포넌트는 자신의 props를 다룰 때 반드시 *순수 함수처럼 동작해야 합니다**
 
     *순수 함수: 입력값을 바꾸려 하지 않고, 항상 동일한 입력값에 대해 동일한 결과를 반환
+
+
+
+## State and Lifecycle
+
+[엘리먼트 렌더링](#엘리먼트-렌더링)에서 다뤘던 `tick`컴포넌트를 완전히 재사용하고, 캡슐화하는 방법을 배울 것입니다. 
+
+- 함수에서 클래스로 변환하기
+
+  ```jsx
+  class Clock extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>05_StateAndLifecycle</h1>
+          <h2>It's {this.props.date.toLocaleTimeString()}.</h2>
+        </div>
+      );
+    }
+  }
+  ```
+
+  - `render()` 메서드는 업데이트가 발생할 때마 호출되지만, 같은 DOM 노드로 `<Clock />`를 렌더링하는 경우 `Clock` 클래스의 단일 인스턴스만 사용된다. 이것이 로컬 state와 생명주기 메서드와 같은 부가적인 기능을 사용할 수 있게 해준다.
+
+- 클래스에 로컬 State 추가하기
+
+  - `date`를 `props`에서 `state`로 이동시키기
+
+    ```jsx
+    import React from "react";
+    
+    class Clock extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { date: new Date() };
+      }
+      render() {
+        return (
+          <div>
+            <h1>05_StateAndLifecycle</h1>
+            <h2>It's {this.state.date.toLocaleTimeString()}.</h2>
+          </div>
+        );
+      }
+    }
+    ```
+
+    1. `render()` 메서드 안에 있는 `this.props.date`를 `this.state.date`로 변경
+    2. `this.state`를 지정하는 `class constructor` 추가
+       - **클래스 컴포넌트는 항상 `props`로 기본 constructor를 호출해야 한다**
+    3. `Clock` 요소에서 date prop 삭제
+
+- 생명주기 메서드를 클래스에 추가하기
+
+  많은 컴포넌트가 있는 애플리케이션에서 **컴포넌트가 삭제될 때 해당 컴포넌트가 사용 중이던 리소스를 확보하는 것이 중요 **합니다.
+
+  - 생명주기 메서드
+    - `componentDidMount()`: 컴포넌트 출력물이 DOM에 렌더링 된 후에 실행되는 메서드
+    - `componentWillUnmount()`: 컴포넌트에 의해 생성된 DOM이 삭제될 때 실행되는 메서드 
+
+  - 최종 코드
+
+    ```jsx
+    import React from "react";
+    
+    class Clock extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { date: new Date() };
+      }
+    
+      // 컴포넌트가 마운트 될 때 실행
+      componentDidMount() {
+        this.timerID = setInterval(() => this.tick(), 1000);
+      }
+    
+      // 컴포넌트가 언마운트 될 때 실행
+      componentWillUnmount() {
+        clearInterval(this.timerID);
+      }
+    
+      tick() {
+        this.setState({ date: new Date() }); // 로컬 state 업데이트
+      }
+    
+      render() {
+        return (
+          <div>
+            <h1>05_StateAndLifecycle</h1>
+            <h2>It's {this.state.date.toLocaleTimeString()}.</h2>
+          </div>
+        );
+      }
+    }
+    
+    export default Clock;
+    ```
+
+    - 실행 순서
+      1. `Clock` 컴포넌트의 constructor를 호출하고, 현재 시각이 포함된 객체로 `this.state`를 초기화
+      2. React는 `Clock`의 `render()` 메서드 호출해서 화면에 표시되어야할 내용을 파악한다. `Clock`의 렌더링 출력값을 일치시키기 위해 DOM을 업데이트한다.
+      3. `Clock` 출력값이 DOM에 삽입되면, `componentDidMount()` 생명주기 메서드를 호출
+      4. 매초 브라우저가 `tick()` 메서드를 호출하고, 그 안에서 `Clock` 컴포넌트는 `setState()`에 현재 시각을 포함하는 객체를 호출하며 UI를 업데이트한다. React는 `state`가 변경된 것을 인지하고, `render()` 메서드를 다시 호출하고, DOM을 업데이트한다. 
+      5. `Clock` 컴포넌트가 DOM으로부터 한 번이라도 삭제된 적이 있다면 React는 타이머를 멈추기 위해 `componentWillUnmount()` 생명주기 메서드를 호출합니다.
+
+- State
+
+  - `setState()`
+
+    - state를 수정할 때에는 직접 수정하지 마세요.
+
+      - `this.state`를 지정할 수 있는 공간은 `constructor` 뿐입니다.
+      - `this.setState()` 사용
+
+    - state 업데이트는 비동기적일 수도 있습니다.
+
+      React가 성능을 위해 여러 `setState()`를 단일 업데이트로 한번에 처리할 수 있기 때문에 다음 state를 계산할 때 `this.props`와 `this.state`에 의존적이면 안된다.
+
+      - 실패할 수 있는 코드
+
+        ```jsx
+        this.setState({
+          counter: this.state.counter + this.props.increment,
+        });
+        ```
+
+      - 수정된 코드
+
+        ```jsx
+        this.setState((state, props) => ({
+          counter: state.counter + props.increment
+        }));
+        ```
+
+        - 객체보다는 함수의 인자로 사용하는 형태의 `setState()`
+
+        ```jsx
+        this.setState(function(state, props) {
+          return {
+            counter: state.counter + props.increment
+          };
+        });
+        ```
+
+        - 일반적인 함수에서도 잘 동작한다.
+
+    - State 업데이트는 병합됩니다.
+
+      - React는 제공한 객체를 현재 state로 병합합니다.
+      - 별도의 `setState()` 호출로 변수를 독립적으로 업데이트할 수 있습니다.
+
+    
+
+## 이벤트 처리하기
+
+React 엘리먼트에서 이벤트를 처리하는 방식은 DOM 엘리먼트에서 이벤트를 처리하는 방식과 매우 유사합니다.
+
+- React 이벤트 처리 방식의 문법
+
+  1. 캐멀 케이스(camelCase) 사용
+
+  2. JSX를 사용하여 문자열이 아닌 함수로 이벤트 핸들러를 전달
+
+     - HTML
+
+       ```jsx
+       <button onclick="activateLasers()">
+       	Activate Lasers
+       </button>
+       ```
+
+     - React
+
+       ```jsx
+       <button onclick={activateLasers}>
+       	Activate Lasers
+       </button>
+       ```
+
+  3. 기본동작 방지시 `preventDefault` 명시적으로 호출
+
+     - HTML
+
+       ```html
+       <a href="#" onclick="console.log('The link was clicked.'); return false">
+         Click me
+       </a>
+       ```
+
+     - React
+
+       ```jsx
+       function ActionLink() {
+         function handleClick(e) {
+           e.preventDefault();
+           alert("It was clicked");
+         }
+         return (
+           <a href="/" onClick={handleClick}>
+             Click me
+           </a>
+         );
+       }
+       ```
+
+       - 여기서 `e`는 합성 이벤트입니다. React는 DOM엘리먼트가 생성되고, 리스너를 추가하기위해 `addEventListener`를 호출할 필요가 없습니다. 대신 엘리먼트가 렌더링될 때 리스너를 제공하면 됩니다. 
+
+         ```jsx
+         class Toggle extends React.Component {
+           constructor(props) {
+             super(props);
+             this.state = {isToggleOn: true};
+         
+             // 콜백에서 `this`가 작동하려면 아래와 같이 바인딩 해주어야 합니다.
+             this.handleClick = this.handleClick.bind(this);
+           }
+         
+           handleClick() {
+             this.setState(state => ({
+               isToggleOn: !state.isToggleOn
+             }));
+           }
+         
+           render() {
+             return (
+               <button onClick={this.handleClick}>
+                 {this.state.isToggleOn ? 'ON' : 'OFF'}
+               </button>
+             );
+           }
+         }
+         ```
+
+       - JSX 콜백에서 `this`의 의미에 주의해야 한다. Javascript에서 클래스 메서드는 기본적으로 바인딩되어 있지 않습니다. `this.handleClick`을 바인딩하지 않고, `onClick`에 전달하면, 함수가 실제로 호출될 때 `this`는 `undefined`가 됩니다.
+
+       - 화살표 함수를 사용한 바인딩
+
+         ```jsx
+         render() {
+           // 이 문법은 `this`가 handleClick 내에서 바인딩되도록 합니다.
+           return (
+             <button onClick={() => this.handleClick()}>
+               Click me
+             </button>
+           );
+         }
+         ```
+
+         - 대부분의 경우 문제가 되지 않으나, 컴포넌트가 렌더링될 때 마다 다른 콜백이 생성된다는 문제가 있음. 
+
+- 이벤트 핸들러에 인자 전달하기
+
+  루프 내부에서는 이벤트 핸들러에 추가적인 매개변수를 전달하는 것이 일반적입니다.
+
+  ```jsx
+  <button onClick={(e) => this.deleteRow(id, e)}>Delete Row</button>
+  <button onClick={this.deleteRow.bind(this, id)}>Delete Row</button>
+  ```
+
+
+
+## 조건부 렌더링
+
+React에서의 조건부 렌더링은 Javascript 조건처리와 같이 동작합니다. `if`나 `조건부 연산자`와 같은 연산자를 현재 상태의 엘리먼트를 만드는 데 사용하세요. 
+
+[예시 코드](./my-app/src/07_ConditionalRendering.js)
+
+- 예시코드의 조건부 렌더링
+
+  ```jsx
+  if(isLoggedIn) {
+      button = <LogoutButton onClick={this.handleLogoutClick} />;
+    } else {
+      button = <LoginButton onClick={this.handleLoginClick} />;
+  }
+  ```
+
+- 논리 연산자 && 로 if를 인라인으로 표현하기
+
+  ```jsx
+  function Mailbox(props) {
+    const unreadMessages = props.unreadMessages;
+    return (
+      <div>
+        <h1>Hello!</h1>
+        {unreadMessages.length > 0 &&
+          <h2>
+            You have {unreadMessages.length} unread messages.
+          </h2>
+        }
+      </div>
+    );
+  }
+  
+  const messages = ['React', 'Re: React', 'Re:Re: React'];
+  ```
+
+  - `true && expression`은 항상 `true`으로 평가되고, `false && expression`은 항상 `false`로 평가된다. 
+
+- 조건부 연산자로 `if-else` 구문 인라인으로 표현하기
+
+  - 조건부 연산자: `condition ? true : false`
+
+    ```jsx
+    render() {
+      const isLoggedIn = this.state.isLoggedIn;
+      return (
+        <div>
+          {isLoggedIn
+            ? <LogoutButton onClick={this.handleLogoutClick} />
+            : <LoginButton onClick={this.handleLoginClick} />
+          }
+        </div>
+      );
+    }
+    ```
+
+- 컴포넌트가 렌더링하는 것을 막기
+
+  - 컴포넌트 자체를 숨기고싶을 때 `null`을 반환해준다.
+
+    ```jsx
+    function WarningBanner(props) {
+      if (!props.warn) {
+        return null;
+      }
+    
+      return (
+        <div className="warning">
+          Warning!
+        </div>
+      );
+    }
+    ```
+
+    
+
+## 리스트와 Key
+
+엘리먼트 모음을 만들고, 중괄호 `{}`를 사용해서 JSX에 포함시킬 수 있습니다.
+
+```jsx
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map(function (number) {
+    return <li>{number}</li>;
+  });
+  return <ul>{listItems}</ul>;
+}
+
+function NumberToList(props) {
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8];
+  return <NumberList numbers={numbers} />;
+}
+
+export default NumberToList;
+```
+
+- `Warning: Each child in a list should have a unique "key" prop.` 
+
+  - 리스트의 각 항목에 *key를 넣어줘야 함
+
+    *key: 엘리먼트 리스트를 만들 떄 포함해야 하는 특수한 문자열 어트리뷰트
+
+- Key
+
+  React가 어떤 항목을 변경, 추가 또는 삭제할지 식별하는 것을 돕습니다. 엘리먼트의 안정적인 고유성을 부여하기 위해 배열 내부의 엘리먼트에 지정해야 한다.
+
+  - Key를 선택하는 가장 좋은 방법은 데이터의 ID를 사용하는 것이다. 렌더링 항목에 적절한 ID가 없을 경우, 항목의 인덱스를 key로 사용할 수 있다.
+
+    ```jsx
+    const todoItems = todos.map((todo, index) =>
+      // Only do this if items have no stable IDs
+      <li key={index}>
+        {todo.text}
+      </li>
+    );
+    ```
+
+    - 항목의 순서가 바뀔 수 있는 경우 권장하지 않음
+    - [Index를 키로 사용할 경우 발생하는 문제](https://robinpokorny.medium.com/index-as-a-key-is-an-anti-pattern-e0349aece318)
+
+  - Key로 컴포넌트 추출하기
+
+    ```jsx
+    function ListItems(props) {
+      // key 지정 X
+      return <li>{props.value}</li>;
+    }
+    
+    function ListAndKeys(props) {
+      const numbers = [1, 2, 3, 4];
+      const listItems = numbers.map(function (number) {
+        // 배열 안에 key 지정
+        return <ListItems key={number.toString()} value={number} />;
+      });
+      return (
+        <ul>{listItems}</ul>
+      );
+    }
+    ```
+
+    
+
+
+
+## Appendix
+
+### preventDefault
+
+- 사용 목적
+  1. a 태그를 눌렀을 때에도 href 링크로 이동하지 않게 할 경우
+  2. form 안에 submit 역할을 하는 버튼을 눌렀어도 새로 실행하지 않게 하고 싶을 경우(submit은 작동)
+
+### state와 props의 차이점
+
+`state`와 `props`는 모두 일반 Javascript 객체이고, 렌더링 결과물에 영향을 주는 정보를 갖고있습니다. `props`는 함수 매개변수처럼 **컴포넌트에 전달**되는 반면 `state`는 함수 내에 선언된 변수처럼 **컴포넌트 안에서 관리**됩니다.
+
+[공식문서: state와 props의 차이점](https://ko.reactjs.org/docs/faq-state.html#what-is-the-difference-between-state-and-props)
+
+### Error Handling
+
+- Uncaught TypeError: Cannot read property 'setState' of undefined
+  - 함수를 바인딩하지 않았을 경우 발생
+  - [이벤트 처리하기](#이벤트-처리하기) 참고
+

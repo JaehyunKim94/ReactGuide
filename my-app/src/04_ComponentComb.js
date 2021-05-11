@@ -1,11 +1,11 @@
 function Welcome(props) {
-	return <h1> hello, {props.name} </h1>;
+	return <h2> hello, {props.name} </h2>;
 }
 
 function ComponentComb() {
 	return (
 		<div>
-            <h1>04_ComponentComb</h1>
+			<h1>04 _ComponentComb</h1>
 			<Welcome name="Park" />
 			<Welcome name="Kim" />
 			<Welcome name="Lee" />
