@@ -72,7 +72,7 @@ npm start
     // If you want to start measuring performance in your app, pass a function
     // to log results (for example: reportWebVitals(console.log))
     // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+	reportWebVitals();
     ```
 
     - `React.StrictMode`: App의 잠재적인 문제를 알아내기 위한 도구
@@ -372,9 +372,9 @@ setInterval(tick, 1000);
 
   - 함수 컴포넌트나 클래스 컴포넌트는 모두 컴포넌트의 자체 props를 수정해서는 안됩니다. 
 
-  - **모든 React 컴포넌트는 자신의 props를 다룰 때 반드시 *순수 함수처럼 동작해야 합니다**
+  - **모든 React 컴포넌트는 자신의 props를 다룰 때 반드시 \*순수 함수처럼 동작해야 합니다**
 
-    *순수 함수: 입력값을 바꾸려 하지 않고, 항상 동일한 입력값에 대해 동일한 결과를 반환
+    \*순수 함수: 입력값을 바꾸려 하지 않고, 항상 동일한 입력값에 대해 동일한 결과를 반환
 
 
 
@@ -778,6 +778,14 @@ export default NumberToList;
     ```
 
     
+
+## 폼
+
+HTML 폼 엘레먼트 자체가 내부 상태를 가지기 때문에 React의 다른 DOM 엘리먼트와 조금 다르게 동작합니다. 
+
+- 제어 컴포넌트(Controlled Component)
+
+  : React에 의해 값이 제어되는 입력 폼 엘리먼트
 
 
 

@@ -7,6 +7,7 @@ import StateAndLifecycle from "./05_StateAndLifecycle";
 import EventHandling from "./06_EventHandling";
 import ConditionalRendering from "./07_ConditionalRendering";
 import ListAndKeys from "./08_ListAndKeys";
+import ControlledComponent from "./09_ControlledComponent";
 function App() {
   return (
     <div className="App">
@@ -18,6 +19,7 @@ function App() {
       <EventHandling />
       <ConditionalRendering />
       <ListAndKeys />
+      <ControlledComponent />
     </div>
   );
 }
