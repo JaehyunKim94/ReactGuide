@@ -8,6 +8,8 @@ import EventHandling from "./06_EventHandling";
 import ConditionalRendering from "./07_ConditionalRendering";
 import ListAndKeys from "./08_ListAndKeys";
 import ControlledComponent from "./09_ControlledComponent";
+import MultiInputControl from "./09_MultiInputControl";
+import Calculator from "./10_Calculator";
 function App() {
   return (
     <div className="App">
@@ -20,6 +22,8 @@ function App() {
       <ConditionalRendering />
       <ListAndKeys />
       <ControlledComponent />
+      <MultiInputControl />
+      <Calculator />
     </div>
   );
 }
