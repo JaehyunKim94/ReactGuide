@@ -102,7 +102,7 @@ npm start
           </header>
         </div>
       );
-}
+	}
     
     export default App;
     ```
@@ -786,6 +786,228 @@ HTML 폼 엘레먼트 자체가 내부 상태를 가지기 때문에 React의 �
 - 제어 컴포넌트(Controlled Component)
 
   : React에 의해 값이 제어되는 입력 폼 엘리먼트
+  
+  ```jsx
+  class NameForm extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {value: ''};
+  
+      this.handleChange = this.handleChange.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
+    }
+  
+    handleChange(e) {
+      this.setState({value: e.target.value});
+    }
+    handleSubmit(e) {
+      alert("Your name is "+this.state.value);
+      e.preventDefault();
+    }
+  
+    render() {
+      return (
+        <form onSubmit={this.handleSubmit}>
+          <label>Name
+            <input type="text" value={this.state.value} onChange={this.handleChange} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+      )
+    }
+  }
+  ```
+  
+  - 모든 키 입력에 대해서 React state가 업데이트 되는 `handleChange` 실행
+  
+- `textarea` 태그
+
+  React에서 `<textarea>`는 `value` 어트리뷰트를 대신 사용합니다. 이렇게 하면 `<textarea>`를 사용하는 폼은 한 줄 입력을 사용하는 폼과 비슷하게 작성할 수 있습니다. 
+
+  ```jsx
+  <textarea value={this.state.value} onChange={this.handleChange} />
+  ```
+
+- `select` 태그
+
+  React에서는 `selected` 어트리뷰트를 사용하는 대신 `select` 태그에 `value` 어트리뷰트를 사용합니다. 
+
+  - HTML
+
+    ```html
+    <select>
+      <option value="grapefruit">Grapefruit</option>
+      <option value="lime">Lime</option>
+      <option selected value="coconut">Coconut</option>
+      <option value="mango">Mango</option>
+    </select>
+    ```
+
+  - React
+
+    ```jsx
+    <select value={this.state.value} onChange={this.handleChange}>
+      <option value="grapefruit">Grapefruit</option>
+      <option value="lime">Lime</option>
+      <option value="coconut">Coconut</option>
+      <option value="mango">Mango</option>
+    </select>
+    ```
+
+  - `select` 태그에 multiple 옵션을 허용한다면, `value` 어트리뷰트에 배열을 전달할 수 있다. 
+
+- `file input` 태그
+
+  HTML에서 `<input type="file>"`은 하나 이상의 파일을 자신의 장치 저장소에서 서버로 업로드 하거나 [File API](https://developer.mozilla.org/en-US/docs/Web/API/File/Using_files_from_web_applications)를 통해 Javascript로 조작할 수 있습니다. 값이 읽기 전용이기 때문에 React에서는 [비제어 컴포넌트](https://ko.reactjs.org/docs/uncontrolled-components.html#the-file-input-tag) 입니다. 
+
+- 다중 입력 제어하기
+
+  각 엘리먼트에 `name` 어트리뷰트를 추가하고, `event.target.name`값을 통해 작업을 선택할 수 있게 한다. [예시 코드](./my-app/src/09_MultiInputControl.js)
+
+  ```jsx
+  handleInputChange(e) {
+      const target = e.target;
+      const value = target.type === "checkbox" ? target.checked : target.value;
+      const name = target.name;
+      this.setState({ [name]: value });
+    }
+  ```
+
+  - `this.setState({ [name]: value });`는 ES6의 *computed property name 이 사용됨
+
+    *computed property name: `[]`안에서 계산된 식의 결과가 속성명으로 사용됨
+
+
+
+## State 끌어올리기
+
+동일한 데이터에 대한 변경사항을 여러 컴포넌트에 반영해야 할 필요가 있습니다. 이럴 때에는 가장 가까운 공통조상으로 state를 끌어올리는 것이 좋습니다. (state 자체를 조상단계까지 끌어올림)
+
+- [10_TemperatureInput.js](./my-app/src/10_TemperatureInput.js)
+
+  ```jsx
+  import React from "react";
+  
+  // HTML 텍스트를 위함
+  const scaleNames = {
+    c: "Celsius",
+    f: "Farhrenheit",
+  };
+  
+  class TemperatureInput extends React.Component {
+    constructor(props) {
+      super(props);
+      this.handleChange = this.handleChange.bind(this);
+    }
+  
+    // props로 전달된 onTemperatureChange(조상의 setState) 실행
+    handleChange(e) {
+      this.props.onTemperatureChange(e.target.value);
+    }
+  
+    render() {
+      const temperature = this.props.temperature;
+      const scale = this.props.scale;
+      return (
+        <fieldset>
+          <legend>Enter temperature in {scaleNames[scale]}</legend>
+          <input value={temperature} onChange={this.handleChange} />
+        </fieldset>
+      );
+    }
+  }
+  
+  export default TemperatureInput;
+  ```
+
+- [10_Calculator](./my-app/src/10_Calculator.js)
+
+  ```jsx
+  import BoolingVerdict from "./10_BoilingVerdict";
+  import TemperatureInput from "./10_TemperatureInput";
+  import React from "react";
+  
+  function toCelsius(farhrenheit) {
+    return ((farhrenheit - 32) * 5) / 9;
+  }
+  
+  function toFarhrenheit(celsius) {
+    return (celsius * 9) / 5 + 32;
+  }
+  
+  // 익명함수 convert
+  function tryConvert(temperature, convert) {
+    const input = parseFloat(temperature);
+    if (Number.isNaN(input)) {
+      return "";
+    }
+    const output = convert(input);
+    const rounded = Math.round(output * 1000) / 1000;
+    return rounded.toString();
+  }
+  
+  class Calculator extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        temperature: "",
+        scale: "",
+      };
+      this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
+      this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
+    }
+  
+    handleCelsiusChange(temperature) {
+      this.setState({ scale: "c", temperature });
+    }
+  
+    handleFahrenheitChange(temperature) {
+      this.setState({ scale: "f", temperature });
+    }
+  
+    render() {
+      const scale = this.state.scale;
+      const temperature = this.state.temperature;
+      // scale 값에 따라 섭씨 <-> 화씨 변경 함수 실행
+      const celsius =
+        scale === "f" ? tryConvert(temperature, toCelsius) : temperature;
+      const farhrenheit =
+        scale === "c" ? tryConvert(temperature, toFarhrenheit) : temperature;
+  
+      return (
+        <div>
+          <h1>10_Lifting State Up</h1>
+          <TemperatureInput
+            scale="s"
+            temperature={celsius}
+            onTemperatureChange={this.handleCelsiusChange}
+          />
+          <TemperatureInput
+            scale="f"
+            temperature={farhrenheit}
+            onTemperatureChange={this.handleFahrenheitChange}
+          />
+          <BoolingVerdict celsius={parseFloat(celsius)} />
+        </div>
+      );
+    }
+  }
+  
+  export default Calculator;
+  ```
+
+- 입력값을 변경할 때 생기는 일들
+
+  1. `<input>`의 `onChange()`에 지정된 함수를 호출. (예시 코드에서는 `TemperatureIntput`의 `onChagne()` 메서드)
+  2. `TemperatureInput` 컴포넌트의 `handleChange`가 `this.props.onTemperatureChange()` 호출.
+  3. 섭씨/화씨에 따라 `Calculator`의 `handleCelsiusChange()` 와 `handleFahrenheitChange()`중 하나의 메서드를 호출.
+  4. 호출된 메서드가 `this.setState()`를 호출해서 React에 자신을 렌더링하도록 요청
+  5. React는 UI가 어떻게 보여야 하는지 알아내기 위해 `Calculator`컴포넌트의 `render()`메서드  호출. -> 온도의 변환이 이 단계에서 실행됨
+  6. React가 `Calculator`가 전달한 새 props와 함께 `TempeartureInput` 컴포넌트의 `render()` 메서드 호출
+  7. `BoilingVerdict` 컴포넌트에 섭씨 온도를 `props`로 건내면서 해당 컴포넌트의 `render()` 메서드 호출
+  8. React DOM은 입력값과 물의 끓음 여부를 일치시키는 작업과 함께 DOM을 갱신. 값을 입력한 필드는 현재 입력값을 그대로 받고, 다른 입력 필드는 변환된 온도 값으로 갱신.
+
+
 
 
 
